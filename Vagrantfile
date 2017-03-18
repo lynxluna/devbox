@@ -85,6 +85,10 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       vb.customize ["modifyvm", :id, "--cpus", 1]
     end
 
+    machine.vm.provision "file",
+      source:"machines/sysctl-es.conf",
+      destination: "/home/vagrant/sysctl-es.conf"
+
     machine.vm.provision "file", 
       source:"machines/elasticsearch.yml", 
       destination: "/home/vagrant/elasticsearch.yml" 

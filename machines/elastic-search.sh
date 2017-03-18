@@ -23,6 +23,9 @@ rm -rf /home/vagrant/elasticsearch-${ES_VERSION} && \
 
 echo "vagrant ALL= (elasticsearch) NOPASSWD: /usr/share/elasticsearch/bin/elasticsearch" >> /etc/sudoers
 
+sudo cp -a /home/vagrant/sysctl-es.conf /etc/sysctl.d/
+sudo sysctl -p /etc/sysctl.d/sysctl-es.conf 
+
 rm -rf /usr/share/elasticsearch && \
   sudo mv /home/vagrant/elasticsearch-${ES_VERSION} /usr/share/elasticsearch
 
@@ -33,10 +36,9 @@ mkdir -p /usr/share/elasticsearch/data /usr/share/elasticsearch/logs /usr/share/
 
 id -u elasticsearch &> /dev/null || adduser -DH -s /sbin/nologin elasticsearch
 sudo touch /var/log/elasticsearch.log /var/log/elasticsearch.err.log  
-chown -R elasticsearch:elasticsearch /usr/share/elasticsearch \
+sudo chown -R elasticsearch:elasticsearch /usr/share/elasticsearch \
   /var/log/elasticsearch.log /var/log/elasticsearch.err.log  
 
 export PATH=$PATH:/usr/share/elasticsearch/bin
 
-
-
+sudo /etc/init.d/elasticsarch.rc restart
