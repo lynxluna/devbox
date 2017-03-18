@@ -1,0 +1,8 @@
+#!/sbin/openrc-run
+
+name="consul"
+command="/usr/bin/consul"
+command_args="agent -config-file /home/vagrant/config.json"
+pidfile="/var/run/consul.pid"
+start_stop_daemon_args="--background --stdout /var/log/consul.log --stderr /var/log/consul.err.log"
+stopsig="SIGTERM"
