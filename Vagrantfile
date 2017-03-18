@@ -13,21 +13,23 @@ VAGRANTFILE_API_VERSION = "2"
 
 Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   config.vm.box = DEMO_BOX_NAME
-  config.vm.synced_folder ".", "/vagrant", disabled: true
-  
-  config.vm.provider :virtualbox do |vb|
-    vb.customize ["modifyvm", :id, "--memory", "256"]
-    vb.customize ["modifyvm", :id, "--cpus", 1]
-  end
+  config.vm.synced_folder ".", "/vagrant", disabled: true 
 
-  config.vm.provision "file",
+  config.vm.define "consul1" do |machine|
+    machine.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "256"]
+      vb.customize ["modifyvm", :id, "--cpus", 1]
+    end
+
+    machine.vm.provision "file",
       source:"machines/consul.rc",
       destination: "/home/vagrant/consul.rc"
-  
-  config.vm.define "consul1" do |machine|
+    
     machine.vm.provision "file", 
       source:"machines/consul1.json", 
-      destination: "/home/vagrant/config.json"   
+      destination: "/home/vagrant/config.json"
+  
+      
     machine.vm.hostname = "consul1"
     machine.vm.network "private_network", ip: "172.20.20.10"
     machine.vm.provision "shell" do |s|
@@ -36,9 +38,19 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "consul2" do |machine|
+    machine.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "256"]
+      vb.customize ["modifyvm", :id, "--cpus", 1]
+    end
+
+    machine.vm.provision "file",
+      source:"machines/consul.rc",
+      destination: "/home/vagrant/consul.rc"
+
     machine.vm.provision "file", 
       source:"machines/consul2.json", 
-      destination: "/home/vagrant/config.json" 
+      destination: "/home/vagrant/config.json"
+
     machine.vm.hostname = "consul2"
     machine.vm.network "private_network", ip: "172.20.20.20"
     machine.vm.provision "shell" do |s|
@@ -47,14 +59,46 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
   end
 
   config.vm.define "consul3" do |machine|
+    machine.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "256"]
+      vb.customize ["modifyvm", :id, "--cpus", 1]
+    end
+
+    machine.vm.provision "file",
+      source:"machines/consul.rc",
+      destination: "/home/vagrant/consul.rc"
+
     machine.vm.provision "file", 
       source:"machines/consul3.json", 
       destination: "/home/vagrant/config.json" 
+
     machine.vm.hostname = "consul3"
     machine.vm.network "private_network", ip: "172.20.20.30"
     machine.vm.provision "shell" do |s|
       s.path = "machines/install.sh"
     end 
   end
+
+  config.vm.define "elasticsearch" do |machine|
+    machine.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "4096"]
+      vb.customize ["modifyvm", :id, "--cpus", 1]
+    end
+
+    machine.vm.provision "file", 
+      source:"machines/elasticsearch.yml", 
+      destination: "/home/vagrant/elasticsearch.yml" 
+    
+    machine.vm.provision "file",
+      source:"machines/elasticsearch.rc",
+      destination: "/home/vagrant/elasticsearch.rc"
+
+    machine.vm.provision "shell" do |s|
+      s.path = "machines/elastic-search.sh"
+    end
+
+    machine.vm.network "private_network", ip: "172.20.20.70"
+    machine.vm.hostname = "elasticsearch"
+  end    
 end 
 

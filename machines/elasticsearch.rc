@@ -1,0 +1,7 @@
+#!/sbin/openrc-run
+
+name="elasticsearch"
+command="/usr/share/elasticsearch/bin/elasticsearch"
+pidfile="/var/run/elasticsearch.pid"
+start_stop_daemon_args="--user elasticsearch --background --stdout /var/log/elasticsearch.log --stderr /var/log/elasticsearch.err.log"
+stopsig="SIGTERM"
