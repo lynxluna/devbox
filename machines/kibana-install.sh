@@ -63,5 +63,7 @@ sudo /etc/init.d/kibana.rc restart
 
 echo "Registering KIBANA to Service Discovery..."
 curl -s -H "Content-Type: application/json" -X PUT \
-  -d '{"ID":"elasticsearch", "Name":"kibana", "Address":"172.20.20.80","Port":9200}' \
+  -d '{"ID":"kibana", "Name":"kibana", "Address":"172.20.20.80","Port":9200,"check":{"script":"curl http://172.20.20.80:5601 > /dev/null 2>&1", "interval":"10s"}}' \
   http://localhost:8500/v1/agent/service/register
+
+test $? = 0 && echo "Done." || echo "Registration Failed"

@@ -75,8 +75,8 @@ sudo /etc/init.d/elasticsearch.rc restart
 
 echo "Registering Elastic Search to Service Discovery"
 
-curl -H "Content-Type: application/json" -X PUT \
-  -d '{"ID":"elasticsearch", "Name":"es", "Address":"172.20.20.70","Port":9200}' \
+curl -s -H "Content-Type: application/json" -X PUT \
+  -d '{"ID":"elasticsearch", "Name":"es", "Address":"172.20.20.70","Port":9200,"check":{"script":"curl http://172.20.20.70:9200 > /dev/null 2>&1", "interval":"10s"}}' \
   http://localhost:8500/v1/agent/service/register
   
-echo "Done."
+test $? = 0 && echo "Done." || echo "Registration Failed"
