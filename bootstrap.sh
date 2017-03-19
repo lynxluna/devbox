@@ -60,4 +60,4 @@ printf "Vagrant Version: $(vagrant -v)\n"
 
 vagrant plugin install vagrant-alpine
 vagrant up
-${MINIKUBE} start --memory 1024 --cpus 1 --host-only-cidr 172.20.20.100/30
+${MINIKUBE} start --memory 1024 --cpus 1
