@@ -1,0 +1,8 @@
+#!/sbin/openrc-run
+
+name="kibana"
+command="node"
+command_args="--no-warnings /usr/share/kibana/src/cli"
+pidfile="/var/run/kibana.pid"
+start_stop_daemon_args="--user kibana --background --stdout /var/log/kibana.log --stderr /var/log/kibana.err.log"
+stopsig="SIGTERM"

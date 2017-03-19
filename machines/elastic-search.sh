@@ -1,7 +1,37 @@
 #!/bin/sh
 set -e 
-echo "https://alpine.ykode.com/alpine/v3.3/main" > /etc/apk/repositories
-echo "https://alpine.ykode.com/alpine/v3.3/community" >> /etc/apk/repositories
+echo "https://alpine.ykode.com/alpine/v3.4/main" > /etc/apk/repositories
+echo "https://alpine.ykode.com/alpine/v3.4/community" >> /etc/apk/repositories
+
+apk add --update jq unzip curl 
+
+echo "Determining Consul Version to Install..."
+CHECKPOINT_URL="https://checkpoint-api.hashicorp.com/v1/check"
+if [ -z "$CONSUL_DEMO_VERSION" ]; then
+    CONSUL_DEMO_VERSION=$(curl -s "${CHECKPOINT_URL}"/consul | jq .current_version | tr -d '"')
+fi
+
+echo "Fetching Consul version ${CONSUL_DEMO_VERSION} ..."
+cd /tmp/
+curl -s https://releases.hashicorp.com/consul/${CONSUL_DEMO_VERSION}/consul_${CONSUL_DEMO_VERSION}_linux_amd64.zip -o consul.zip
+echo "Installing Consul version ${CONSUL_DEMO_VERSION} ..."
+
+rm -fr /usr/bin/consul /tmp/consul 
+
+unzip -o consul.zip
+sudo chmod +x consul
+sudo mv consul /usr/bin/consul
+sudo mkdir -p /etc/consul.d
+sudo chmod a+w /etc/consul.d
+sudo mkdir -p /var/consul
+sudo cp /home/vagrant/consul.rc /etc/init.d/consul.rc
+
+# Change host 
+mv /home/vagrant/config.json /home/vagrant/config.old.json
+cat /home/vagrant/config.old.json | jq '.bind_addr="172.20.20.70"' > /home/vagrant/config.json
+
+# START CONSUL
+sudo /etc/init.d/consul.rc restart  
 
 echo "Installing Java 8 from community repo..."
 apk add --update openjdk8 curl 
@@ -41,4 +71,12 @@ sudo chown -R elasticsearch:elasticsearch /usr/share/elasticsearch \
 
 export PATH=$PATH:/usr/share/elasticsearch/bin
 
-sudo /etc/init.d/elasticsarch.rc restart
+sudo /etc/init.d/elasticsearch.rc restart
+
+echo "Registering Elastic Search to Service Discovery"
+
+curl -H "Content-Type: application/json" -X PUT \
+  -d '{"ID":"elasticsearch", "Name":"es", "Address":"172.20.20.70","Port":9200}' \
+  http://localhost:8500/v1/agent/service/register
+  
+echo "Done."

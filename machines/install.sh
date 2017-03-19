@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "https://alpine.ykode.com/alpine/v3.3/main" > /etc/apk/repositories
+echo "https://alpine.ykode.com/alpine/v3.4/main" > /etc/apk/repositories
 apk add --update jq unzip curl
 
 echo "Determining Consul Version to Install..."
@@ -14,6 +14,8 @@ cd /tmp/
 curl -s https://releases.hashicorp.com/consul/${CONSUL_DEMO_VERSION}/consul_${CONSUL_DEMO_VERSION}_linux_amd64.zip -o consul.zip
 echo "Installing Consul version ${CONSUL_DEMO_VERSION} ..."
 
+test -f /tmp/consul && rm -fr /tmp/consul
+
 unzip consul.zip
 sudo chmod +x consul
 sudo mv consul /usr/bin/consul
@@ -21,4 +23,6 @@ sudo mkdir -p /etc/consul.d
 sudo chmod a+w /etc/consul.d
 sudo mkdir -p /var/consul
 sudo cp /home/vagrant/consul.rc /etc/init.d/consul.rc
-sudo /etc/init.d/consul.rc restart  
+sudo /etc/init.d/consul.rc restart
+
+echo "Done."

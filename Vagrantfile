@@ -5,7 +5,7 @@
 CONSUL_DEMO_VERSION = ENV['CONSUL_DEMO_VERSION']
 
 # Specify a custom Vagrant box for the demo
-DEMO_BOX_NAME = ENV['DEMO_BOX_NAME'] || "maier/alpine-3.3.1-x86_64"
+DEMO_BOX_NAME = ENV['DEMO_BOX_NAME'] || "maier/alpine-3.4-x86_64"
 
 # Vagrantfile API/syntax version.
 # NB: Don't touch unless you know what you're doing!
@@ -97,12 +97,51 @@ Vagrant.configure(VAGRANTFILE_API_VERSION) do |config|
       source:"machines/elasticsearch.rc",
       destination: "/home/vagrant/elasticsearch.rc"
 
+    machine.vm.provision "file", 
+      source:"machines/consul-client.json", 
+      destination: "/home/vagrant/config.json"
+
+     machine.vm.provision "file",
+      source:"machines/consul.rc",
+      destination: "/home/vagrant/consul.rc"
+
     machine.vm.provision "shell" do |s|
       s.path = "machines/elastic-search.sh"
     end
 
     machine.vm.network "private_network", ip: "172.20.20.70"
     machine.vm.hostname = "elasticsearch"
-  end    
+  end
+
+  config.vm.define "kibana" do |machine|
+    machine.vm.box = "nastevens/alpine-3.5-x86_64"
+    machine.vm.network "private_network", ip: "172.20.20.80"
+    machine.vm.hostname = "kibana"
+    
+    machine.vm.provider :virtualbox do |vb|
+      vb.customize ["modifyvm", :id, "--memory", "512"]
+      vb.customize ["modifyvm", :id, "--cpus", 1]
+    end
+
+    machine.vm.provision "file", 
+      source:"machines/consul-client.json", 
+      destination: "/home/vagrant/config.old.json"
+
+    machine.vm.provision "file",
+      source:"machines/kibana.rc",
+      destination: "/home/vagrant/kibana.rc"
+
+    machine.vm.provision "file",
+      source:"machines/consul.rc",
+      destination: "/home/vagrant/consul.rc"
+
+    machine.vm.provision "file",
+      source:"machines/kibana.yml",
+      destination:"/home/vagrant/kibana.yml"
+
+    machine.vm.provision "shell" do |s|
+      s.path = "machines/kibana-install.sh"
+    end  
+  end        
 end 
 
