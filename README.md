@@ -36,9 +36,12 @@ There are 6 machines launched by this script
   - 1 [kubernetes](http://kubernetes.io) node, vCPU: 1, RAM: 1024 Mb
 
 Total RAM consumption is 6 Gb, so 8 Gb of minimum RAM is advised. During run, the
-cluster will only consume only tiny amount of CPU.
+cluster will only consume only small amount of CPU. Kubernetes will take most
+portion of them. However, during development you can turn it off.
 
 ![CPU Consumption](/pictures/cpu.png).
+
+However, minikube will takes another 40-60% of CPU.
 
 ## Copyright
 
