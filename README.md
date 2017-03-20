@@ -41,7 +41,7 @@ portion of them. However, during development you can turn it off.
 
 ![CPU Consumption](/pictures/cpu.png).
 
-However, minikube will takes another 40-60% of CPU.
+The total CPU consumption will hover around 20%
 
 ## Copyright
 
